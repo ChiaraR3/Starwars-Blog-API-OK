@@ -4,11 +4,29 @@ from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
 
+favorite_characters= db.Table('favorite_characters',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('character_id', db.Integer, db.ForeignKey('character.id'), primary_key=True)
+)
+
+favorite_planets= db.Table('favorite_planets',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('planet_id', db.Integer, db.ForeignKey('planet.id'), primary_key=True)
+)
+
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+
+    favorite_characters = db.relationship('Character', secondary=favorite_characters, lazy='subquery',
+        backref=db.backref('user', lazy=True))
+
+    favorite_planets = db.relationship('Planet', secondary=favorite_planets, lazy='subquery',
+        backref=db.backref('user', lazy=True))    
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -20,7 +38,7 @@ class User(db.Model):
             # do not serialize the password, its a security breach
         }
 
-class People(db.Model):
+class Character(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
     height = db.Column(db.Integer,(120))
@@ -31,7 +49,7 @@ class People(db.Model):
     gender = db.Column(db.String(250)) 
 
     def __repr__(self):
-        return '<People %r>' % self.people
+        return '<Character %r>' % self.character
 
     def serialize(self):
         return {
@@ -44,3 +62,28 @@ class People(db.Model):
             "eye_color": self.eye_color,
             "gender": self.gender,
         }
+
+class Planet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+    diameter = db.Column(db.Integer,(120))
+    population = db.Column(db.Integer,(80))
+    climate = db.Column(db.String(250))
+    terrain = db.Column(db.String(250))
+    surface_water = db.Column(db.Integer(80))
+   
+    def __repr__(self):
+        return '<Planet %r>' % self.planet
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "diameter": self.diameter,
+            "population": self.population,
+            "climate": self.climate,
+            "terrain": self.terrain,
+            "surface_water": self.surface_water,
+            }
+
+
