@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User,Planet,Character,favorite_characters,favorite_planets
 #from models import Person
 
 app = Flask(__name__)
@@ -38,6 +38,70 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@app.route('/list/people', methods=['GET'])
+def list_of_character():
+    character = Character(
+    name = "Luke Skywalker",
+    height = "172",
+    mass = "77",
+    hair_color = "blond",
+    homeworld = "Tatooine",
+    eye_color = "blue",
+    gender = "male")
+    db.session.add(character)
+
+    character = Character(
+    name = "Leia Organa",
+    height = "150",
+    mass = "49",
+    hair_color = "brown",
+    homeworld = "Alderaan",
+    eye_color = "brown",
+    gender = "female")
+    db.session.add(character)
+    
+    db.session.commit()
+
+    return jsonify("It is ok"), 200
+    
+@app.route('/people', methods=['GET'])
+def get_character():
+    characters = Character.query.all()
+    characters = list(map(lambda character : character.serialize(), characters))
+    return jsonify(characters), 200
+
+@app.route('/list/planets', methods=['GET'])
+def list_of_planet():
+    planet = Planet(
+    name = "Alderaan",
+    diameter = "12500",
+    population = "2000000000",
+    climate = "temperate",
+    terrain = "grasslands, mountains",
+    surface_water = "40")
+    db.session.add(planet)
+
+    planet = Planet(
+    name = "Tatooine",
+    diameter = "10465",
+    population = "200000",
+    climate = "arid",
+    terrain = "desert",
+    surface_water = "1")
+    db.session.add(planet)
+    
+    db.session.commit()
+
+    return jsonify("It is ok"), 200
+    
+@app.route('/planets', methods=['GET'])
+def get_planet():
+    planets = Planet.query.all()
+    planets = list(map(lambda planet : planet.serialize(), planets))
+
+    return jsonify(planets), 200
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
