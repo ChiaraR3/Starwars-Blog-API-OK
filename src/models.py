@@ -83,5 +83,8 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
+            "favorite_characters": self.favorite_characters,
+            "favorite_planets": self.favorite_planets,
+
             # do not serialize the password, its a security breach
         }

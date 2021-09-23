@@ -30,16 +30,35 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
+@app.route('/create/user', methods=['GET'])
+def list_of_user():
+    user = User(
+    password = "123",
+    email = "prueba@prueba.com",
+    is_active = True,
+    favorite_characters = "1",
+    favorite_planets = "2")
+    db.session.add(user)
+    
+    user2 = User(
+    password = "456",
+    email = "otro@user.com",
+    is_active = True,
+    favorite_characters = "3",
+    favorite_planets = "4")
+    db.session.add(user)
+    
+    db.session.commit()
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
+    return jsonify("it is ok"), 200
 
-    return jsonify(response_body), 200
+@app.route('/users', methods=['GET'])
+def get_user():
+    users = User.query.all()
+    users = list(map(lambda user : user.serialize(), users))
+    return jsonify(users), 200
 
-@app.route('/list/people', methods=['GET'])
+@app.route('/create/people', methods=['GET'])
 def list_of_character():
     character = Character(
     name = "Luke Skywalker",
@@ -51,7 +70,7 @@ def list_of_character():
     gender = "male")
     db.session.add(character)
 
-    character = Character(
+    character2 = Character(
     name = "Leia Organa",
     height = "150",
     mass = "49",
@@ -59,7 +78,7 @@ def list_of_character():
     homeworld = "Alderaan",
     eye_color = "brown",
     gender = "female")
-    db.session.add(character)
+    db.session.add(character2)
     
     db.session.commit()
 
@@ -71,7 +90,7 @@ def get_character():
     characters = list(map(lambda character : character.serialize(), characters))
     return jsonify(characters), 200
 
-@app.route('/list/planets', methods=['GET'])
+@app.route('/create/planets', methods=['GET'])
 def list_of_planet():
     planet = Planet(
     name = "Alderaan",
@@ -82,14 +101,14 @@ def list_of_planet():
     surface_water = "40")
     db.session.add(planet)
 
-    planet = Planet(
+    planet2 = Planet(
     name = "Tatooine",
     diameter = "10465",
     population = "200000",
     climate = "arid",
     terrain = "desert",
     surface_water = "1")
-    db.session.add(planet)
+    db.session.add(planet2)
     
     db.session.commit()
 
@@ -101,6 +120,26 @@ def get_planet():
     planets = list(map(lambda planet : planet.serialize(), planets))
 
     return jsonify(planets), 200
+    
+
+@app.route('/users/<int:user_id>/favorites', methods=['GET'])
+def user_favorites(user_id):
+    user = User.query.get(user_id)
+    favorite_chars = user.favorite_characters.query.all()
+    favorite_chars = list(map(lambda favorite_characters : favorite_characters.serialize(), favorite_chars))
+
+    return jsonify(favorite_chars), 200
+
+@app.route("/people/<int:people_id>", methods=["GET"])
+def get_one_character(people_id):
+    character = Character.query.get(people_id)
+    return jsonify(character.serialize()), 200
+
+
+@app.route("/planets/<int:planets_id>", methods=["GET"])
+def get_one_planet(planets_id):
+    planet = Planet.query.get(planets_id)
+    return jsonify(planet.serialize()), 200
 
 
 # this only runs if `$ python src/main.py` is executed
