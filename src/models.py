@@ -26,7 +26,7 @@ class Character(db.Model):
     gender = db.Column(db.String(250)) 
 
     def __repr__(self):
-        return '<Character %r>' % self.character
+        return '<Character %r>' % self.name
 
     def serialize(self):
         return {
@@ -50,7 +50,7 @@ class Planet(db.Model):
     surface_water = db.Column(db.Integer())
    
     def __repr__(self):
-        return '<Planet %r>' % self.planet
+        return '<Planet %r>' % self.name
 
     def serialize(self):
         return {
@@ -77,14 +77,14 @@ class User(db.Model):
         backref=db.backref('user', lazy=True))    
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.email
 
     def serialize(self):
         return {
             "id": self.id,
             "email": self.email,
-            "favorite_characters": self.favorite_characters,
-            "favorite_planets": self.favorite_planets,
+            #"favorite_characters": self.favorite_characters,
+            #"favorite_planets": self.favorite_planets,
 
             # do not serialize the password, its a security breach
         }

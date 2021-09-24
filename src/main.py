@@ -40,7 +40,7 @@ def list_of_user():
     planetfav = " ")
     db.session.add(user)
     
-    user = User(
+    user2= User(
     password = "456",
     email = "otro@user.com",
     is_active = True,
@@ -128,20 +128,32 @@ def create_user_favorites():
     user = User.query.get(1)
     character = Character.query.filter_by(name = "Leia Organa").first()
     user.favorite_characters.append(character)
+    planet = Planet.query.filter_by(name = "Tatooine").first()
+    user.favorite_planets.append(planet)
     db.session.add(user)
+   
+
+    user2 = User.query.get(2)
+    character2 = Character.query.filter_by(name = "Luke Skywalker").first()
+    user2.favorite_characters.append(character2)
+    planet2 = Planet.query.filter_by(name = "Alderaan").first()
+    user2.favorite_planets.append(planet2)
+    db.session.add(user2)
+
     db.session.commit()
     
     return jsonify("ok"), 200
+
 
 @app.route('/users/<int:user_id>/favorites', methods=['GET'])
 def get_user_favorites(user_id):
     user = User.query.get(user_id)
     favorites = []
-    for characterfav in user.favorite_characters:
-        favorites.append(character.name)
-        print(character.name)
-    for planetfav in user.favorite_planets:
-        favorites.append(planet.name)
+    for character in user.favorite_characters:
+        favorites.append({"id": character.id, "name": character.name})
+        
+    for planet in user.favorite_planets:
+        favorites.append({"id": planet.id, "name": planet.name})
 
     return jsonify(favorites), 200
 
@@ -156,6 +168,12 @@ def get_one_character(people_id):
 def get_one_planet(planets_id):
     planet = Planet.query.get(planets_id)
     return jsonify(planet.serialize()), 200
+
+@app.route("/favorite/planet/<int:planet_id>", methods=["POST"])
+def add_fav_planet(planets_id):
+    
+
+
 
 
 # this only runs if `$ python src/main.py` is executed
