@@ -36,16 +36,16 @@ def list_of_user():
     password = "123",
     email = "prueba@prueba.com",
     is_active = True,
-    favorite_characters = "1",
-    favorite_planets = "2")
+    characterfav = " ",
+    planetfav = " ")
     db.session.add(user)
     
-    user2 = User(
+    user = User(
     password = "456",
     email = "otro@user.com",
     is_active = True,
-    favorite_characters = "3",
-    favorite_planets = "4")
+    characterfav = " ",
+    planetfav = " ")
     db.session.add(user)
     
     db.session.commit()
@@ -61,23 +61,25 @@ def get_user():
 @app.route('/create/people', methods=['GET'])
 def list_of_character():
     character = Character(
-    name = "Luke Skywalker",
-    height = "172",
-    mass = "77",
-    hair_color = "blond",
-    homeworld = "Tatooine",
-    eye_color = "blue",
-    gender = "male")
+        name = "Luke Skywalker",
+        height = "172",
+        mass = "77",
+        hair_color = "blond",
+        homeworld = "Tatooine",
+        eye_color = "blue",
+        gender = "male"
+        )
     db.session.add(character)
 
     character2 = Character(
-    name = "Leia Organa",
-    height = "150",
-    mass = "49",
-    hair_color = "brown",
-    homeworld = "Alderaan",
-    eye_color = "brown",
-    gender = "female")
+        name = "Leia Organa",
+        height = "150",
+        mass = "49",
+        hair_color = "brown",
+        homeworld = "Alderaan",
+        eye_color = "brown",
+        gender = "female"
+        )
     db.session.add(character2)
     
     db.session.commit()
@@ -121,14 +123,28 @@ def get_planet():
 
     return jsonify(planets), 200
     
+@app.route('/create/favorites', methods=['GET'])
+def create_user_favorites():
+    user = User.query.get(1)
+    character = Character.query.filter_by(name = "Leia Organa").first()
+    user.favorite_characters.append(character)
+    db.session.add(user)
+    db.session.commit()
+    
+    return jsonify("ok"), 200
 
 @app.route('/users/<int:user_id>/favorites', methods=['GET'])
-def user_favorites(user_id):
+def get_user_favorites(user_id):
     user = User.query.get(user_id)
-    favorite_chars = user.favorite_characters.query.all()
-    favorite_chars = list(map(lambda favorite_characters : favorite_characters.serialize(), favorite_chars))
+    favorites = []
+    for characterfav in user.favorite_characters:
+        favorites.append(character.name)
+        print(character.name)
+    for planetfav in user.favorite_planets:
+        favorites.append(planet.name)
 
-    return jsonify(favorite_chars), 200
+    return jsonify(favorites), 200
+
 
 @app.route("/people/<int:people_id>", methods=["GET"])
 def get_one_character(people_id):
