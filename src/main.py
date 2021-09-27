@@ -169,14 +169,61 @@ def get_one_planet(planets_id):
     planet = Planet.query.get(planets_id)
     return jsonify(planet.serialize()), 200
 
-@app.route("/favorite/planet/<int:planet_id>", methods=["POST"])
+@app.route("/favorite/planet/<int:planets_id>", methods=["POST"])
 def add_fav_planet(planets_id):
+    planet = Planet.query.get(planets_id)
+    user = User.query.get(1)
+    user.favorite_planets.append(planet)
+
+    planet2 = Planet.query.get(planets_id)
+    user2 = User.query.get(2)
+    user2.favorite_planets.append(planet2)
+    db.session.commit()
+    return jsonify(planet.serialize(), planet2.serialize()), 200
+
+@app.route("/favorite/people/<int:people_id>", methods=["POST"])
+def add_fav_character(people_id):
+    character = Character.query.get(people_id)
+    user = User.query.get(1)
+    user.favorite_characters.append(character)
+    
+    character2 = Character.query.get(people_id)
+    user2 = User.query.get(2)
+    user2.favorite_characters.append(character2)
+    db.session.commit()
+    return jsonify(character.serialize(), character2.serialize()), 200
+   
+@app.route("/favorite/planet/<int:planets_id>", methods=["DELETE"])
+def del_fav_planet(planets_id):
+    planet = Planet.query.get(planets_id)
+    user = User.query.get(1)
+    plan_position = user.favorite_planets.index(planet)
+    user.favorite_planets.pop(plan_position)
+
+    planet2 = Planet.query.get(planets_id)
+    user2 = User.query.get(2)
+    plan_position2 = user2.favorite_planets.index(planet2)
+    user2.favorite_planets.pop(plan_position2)
+    db.session.commit()
+    return jsonify(planet.serialize(), planet2.serialize()),200
+
+@app.route("/favorite/people/<int:people_id>", methods=["DELETE"])
+def del_fav_character(people_id):
+    character = Character.query.get(people_id)
+    user = User.query.get(1)
+    char_position = user.favorite_characters.index(character)
+    user.favorite_characters.pop(char_position)
+
+    character2 = Character.query.get(people_id)
+    user2 = User.query.get(2)
+    char_position2 = user2.favorite_characters.index(character2)
+    user2.favorite_characters.pop(char_position2)
+    db.session.commit()
+    return jsonify(character.serialize(), character2.serialize()),200
     
 
 
-
-
 # this only runs if `$ python src/main.py` is executed
-if __name__ == '__main__':
-    PORT = int(os.environ.get('PORT', 3000))
-    app.run(host='0.0.0.0', port=PORT, debug=False)
+#if __name__ == '__main__':
+ #   PORT = int(os.environ.get('PORT', 3000))
+  #  app.run(host='0.0.0.0', port=PORT, debug=False)
